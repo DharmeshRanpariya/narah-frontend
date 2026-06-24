@@ -10,6 +10,7 @@ import ProductDetail from './pages/ProductDetail'
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import Contact from './pages/Contact'
+import Gallery from './pages/Gallery'
 import FAQs from './pages/FAQs'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import AdminLogin from './pages/AdminLogin'
@@ -17,10 +18,13 @@ import AdminDashboard from './pages/AdminDashboard'
 import AdminProducts from './pages/AdminProducts'
 import AdminCategories from './pages/AdminCategories'
 import AdminSliders from './pages/AdminSliders'
+import AdminHeroSlides from './pages/AdminHeroSlides'
 import AdminTheme from './pages/AdminTheme'
 import ProtectedAdminRoute from './components/ProtectedAdminRoute'
+import ScrollToTop from './components/ScrollToTop'
 import { useTheme } from './store/theme'
 import { useAuth } from './store/auth'
+import { uuid } from './utils/uuid'
 import './styles/index.css'
 
 function AppContent() {
@@ -32,16 +36,17 @@ function AppContent() {
   useEffect(() => {
     const sessionId = localStorage.getItem('sessionId')
     if (!sessionId) {
-      localStorage.setItem('sessionId', crypto.randomUUID())
+      localStorage.setItem('sessionId', uuid())
     }
     initializeTheme()
     initializeAuth()
   }, [initializeTheme, initializeAuth])
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen bg-ink text-secondary">
+      <ScrollToTop />
       {!isAdminRoute && <Header />}
-      <main className={`flex-grow ${!isAdminRoute ? 'pt-32' : ''}`}>
+      <main className={`flex-grow ${!isAdminRoute ? 'pt-20 md:pt-[7.5rem]' : ''}`}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
@@ -49,6 +54,7 @@ function AppContent() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/gallery" element={<Gallery />} />
           <Route path="/faqs" element={<FAQs />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/admin/login" element={<AdminLogin />} />
@@ -85,6 +91,14 @@ function AppContent() {
             }
           />
           <Route
+            path="/admin/hero-slides"
+            element={
+              <ProtectedAdminRoute>
+                <AdminHeroSlides />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
             path="/admin/theme"
             element={
               <ProtectedAdminRoute>
@@ -105,7 +119,7 @@ function AppContent() {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="light"
+        theme="dark"
       />
     </div>
   )

@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:5000'
+const API_URL = (import.meta as any).env.VITE_API_URL || 'https://narahsilver.com'
 
 const api = axios.create({
   baseURL: API_URL,
@@ -59,6 +59,14 @@ export const galleryService = {
   createGalleryItem: (data: any) => api.post('/gallery', data),
   updateGalleryItem: (id: string, data: any) => api.put(`/gallery/${id}`, data),
   deleteGalleryItem: (id: string) => api.delete(`/gallery/${id}`),
+}
+
+export const heroService = {
+  getHeroSlides: () => api.get('/hero'),
+  getHeroSlide: (id: string) => api.get(`/hero/${id}`),
+  createHeroSlide: (data: any) => api.post('/hero', data),
+  updateHeroSlide: (id: string, data: any) => api.put(`/hero/${id}`, data),
+  deleteHeroSlide: (id: string) => api.delete(`/hero/${id}`),
 }
 
 export const authService = {

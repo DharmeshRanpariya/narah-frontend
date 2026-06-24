@@ -5,14 +5,36 @@
 @tailwind utilities;
 
 :root {
-  --color-primary: #D06AA0;
-  --color-secondary: #FFFFFF;
-  --color-accent: #2C2C2C;
-  --primary: #D06AA0;
-  --secondary: #FFFFFF;
-  --accent: #2C2C2C;
-  --light: #F5F5F5;
+  /* Accent (gold scale) */
+  --color-primary: #D4AF37;
+  --color-secondary: #F5E7C1;
+  --color-accent: #0B0B0F;
+  --primary: #D4AF37;
+  --secondary: #F5E7C1;
+  --accent: #0B0B0F;
   --gold: #D4AF37;
+  --color-gold: #D4AF37;
+  --color-gold-soft: #E8C765;
+  --color-gold-deep: #B8902A;
+  --color-gold-pale: #F0D77A;
+  --color-gold-border: rgba(212, 175, 55, 0.22);
+  --color-gold-border-strong: rgba(212, 175, 55, 0.35);
+
+  /* Surfaces & text (full-theme tokens — flipped per theme by the store) */
+  --bg: #0B0B0F;
+  --surface: #1A1A22;
+  --surface-2: #14141A;
+  --line: #26262F;
+  --text: #EDEAE0;
+  --text-muted: #A8A29A;
+  --text-faint: #6E6A63;
+  --on-accent: #0B0B0F;
+
+  /* legacy aliases */
+  --light: #14141A;
+  --ink: #0B0B0F;
+  --ink-soft: #14141A;
+  --ink-card: #1A1A22;
 }
 
 * {
@@ -27,9 +49,10 @@ html {
 
 body {
   font-family: 'Inter', sans-serif;
-  color: var(--accent);
-  background-color: #FFFFFF;
+  color: var(--text, #EDEAE0);
+  background-color: var(--bg, #0B0B0F);
   overflow-x: hidden;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -379,15 +402,49 @@ button {
 
 /* Gradient backgrounds */
 .gradient-primary {
-  background: linear-gradient(135deg, #D06AA0 0%, #E095BA 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color-gold-deep, #B8902A) 0%,
+    var(--color-gold, #D4AF37) 45%,
+    var(--color-gold-pale, #F0D77A) 100%
+  );
 }
 
 .gradient-dark {
-  background: linear-gradient(135deg, #2C2C2C 0%, #1a1a1a 100%);
+  background: linear-gradient(135deg, #14141A 0%, #0B0B0F 100%);
 }
 
 .gradient-accent {
   background: linear-gradient(135deg, #D4AF37 0%, #E5C158 100%);
+}
+
+/* Gold text gradient for luxury headlines (theme-accent driven) */
+.text-gold-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--color-gold-pale, #F0D77A) 0%,
+    var(--color-gold, #D4AF37) 50%,
+    var(--color-gold-deep, #B8902A) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Dark glassmorphism for luxury surfaces */
+.glass-dark {
+  background: rgba(20, 20, 26, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--color-gold-border, rgba(212, 175, 55, 0.22));
+}
+
+.gold-border {
+  border: 1px solid var(--color-gold-border-strong, rgba(212, 175, 55, 0.35));
+}
+
+.hairline-gold {
+  background: linear-gradient(90deg, transparent, var(--color-gold, rgba(212,175,55,0.6)), transparent);
 }
 
 /* Premium styling */
@@ -420,22 +477,22 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--surface-2, #14141A);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #D06AA0;
+  background: #D4AF37;
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #c05a8f;
+  background: #B8902A;
 }
 
 /* Selection color */
 ::selection {
-  background-color: #D06AA0;
-  color: white;
+  background-color: #D4AF37;
+  color: #0B0B0F;
 }
 
 /* Enhanced scroll effects */
@@ -507,4 +564,13 @@ html {
     #f0f0f0 75%
   );
   background-size: 1000px 100%;
+}
+
+/* Hide scrollbar but keep scroll (mobile horizontal carousels) */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
 }

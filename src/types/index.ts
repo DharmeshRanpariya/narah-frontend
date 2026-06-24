@@ -23,6 +23,7 @@ export interface Category {
   name: string;
   description?: string;
   icon?: string;
+  image?: string;
   displayOrder: number;
 }
 
@@ -54,6 +55,18 @@ export interface GalleryItem {
   title?: string;
   description?: string;
   category?: string;
+  displayOrder: number;
+  isActive: boolean;
+}
+
+export interface HeroSlide {
+  _id: string;
+  url: string;
+  eyebrow?: string;
+  title?: string;
+  subtitle?: string;
+  ctaText?: string;
+  ctaLink?: string;
   displayOrder: number;
   isActive: boolean;
 }

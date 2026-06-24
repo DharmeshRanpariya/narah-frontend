@@ -48,21 +48,21 @@ export default function PrivacyPolicy() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+    <div className="min-h-screen bg-ink">
       {/* Hero Section */}
-      <section className="py-20 px-4">
+      <section className="py-12 md:py-20 px-4">
         <div className="container text-center animate-slideUp">
-          <h1 className="text-5xl md:text-6xl font-bold text-accent mb-4 animate-textReveal">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold text-body mb-4 animate-textReveal">
             Privacy Policy
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto animate-fadeInUp animation-delay-200">
+          <p className="text-lg text-muted max-w-2xl mx-auto animate-fadeInUp animation-delay-200">
             Last updated: {new Date().toLocaleDateString()}
           </p>
         </div>
       </section>
 
       {/* Content Section */}
-      <section className="py-16 px-4">
+      <section className="py-16 px-4 bg-ink-soft">
         <div className="container max-w-3xl">
           <div className="space-y-8">
             {sections.map((section, idx) => (
@@ -71,14 +71,14 @@ export default function PrivacyPolicy() {
                 className="animate-slideUp animation-delay-300"
                 style={{ animationDelay: `${idx * 100}ms` }}
               >
-                <div className="bg-white rounded-xl shadow-md-premium p-8 hover:shadow-lg-premium transition-shadow duration-300">
-                  <h2 className="text-2xl font-bold text-accent mb-4 flex items-center gap-3">
-                    <span className="w-8 h-8 rounded-full gradient-primary text-white flex items-center justify-center text-sm font-bold">
+                <div className="bg-ink-card border border-ink-border rounded-2xl shadow-md-premium p-6 md:p-8 hover:border-gold/40 hover:shadow-lg-premium transition-all duration-300">
+                  <h2 className="text-2xl font-serif font-bold text-body mb-4 flex items-center gap-3">
+                    <span className="w-8 h-8 flex-shrink-0 rounded-full bg-gold-gradient text-ink flex items-center justify-center text-sm font-bold">
                       {idx + 1}
                     </span>
                     {section.title}
                   </h2>
-                  <p className="text-gray-600 leading-relaxed text-base">
+                  <p className="text-muted leading-relaxed text-base">
                     {section.content}
                   </p>
                 </div>
@@ -89,18 +89,18 @@ export default function PrivacyPolicy() {
       </section>
 
       {/* Footer CTA */}
-      <section className="py-16 px-4 bg-gradient-to-t from-gray-50 to-transparent">
+      <section className="py-16 px-4 bg-ink">
         <div className="container max-w-2xl">
-          <div className="glass-effect rounded-2xl p-12 text-center shadow-lg-premium animate-scaleIn">
-            <h2 className="text-3xl font-bold text-accent mb-4">
+          <div className="bg-ink-card border border-ink-border rounded-2xl p-8 md:p-12 text-center shadow-lg-premium animate-scaleIn">
+            <h2 className="text-3xl font-serif font-bold text-body mb-4">
               Have Privacy Questions?
             </h2>
-            <p className="text-gray-600 mb-8">
+            <p className="text-muted mb-8">
               We believe in transparency and are happy to address any concerns about how we handle your data.
             </p>
             <button
               onClick={() => (window.location.href = '/contact')}
-              className="gradient-primary hover-glow text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 hover-lift"
+              className="bg-gold-gradient hover-glow text-ink px-8 py-3 rounded-lg font-semibold transition-all duration-300 hover-lift"
             >
               Get in Touch
             </button>

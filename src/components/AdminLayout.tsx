@@ -15,6 +15,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { path: '/admin/dashboard', label: 'Dashboard', icon: '📊' },
     { path: '/admin/products', label: 'Products', icon: '📦' },
     { path: '/admin/categories', label: 'Categories', icon: '🏷️' },
+    { path: '/admin/hero-slides', label: 'Hero Slides', icon: '✨' },
     { path: '/admin/sliders', label: 'Sliders', icon: '🖼️' },
     { path: '/admin/theme', label: 'Theme', icon: '🎨' },
   ]

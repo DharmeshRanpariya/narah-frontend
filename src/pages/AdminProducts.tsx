@@ -14,7 +14,9 @@ export default function AdminProducts() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [imagePreview, setImagePreview] = useState<string>('')
+  // Up to MAX_IMAGES images per product. The first one is treated as primary.
+  const [images, setImages] = useState<string[]>([])
+  const [urlInput, setUrlInput] = useState('')
   const [imageUploading, setImageUploading] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
@@ -22,9 +24,10 @@ export default function AdminProducts() {
     price: '',
     categoryId: '',
     stockQuantity: '',
-    imageUrl: '',
   })
   const [imageInputType, setImageInputType] = useState<'url' | 'upload'>('url')
+
+  const MAX_IMAGES = 4
 
   useEffect(() => {
     if (!isAdmin) {
@@ -60,27 +63,56 @@ export default function AdminProducts() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
-    if (name === 'imageUrl') {
-      setImagePreview(value)
+  }
+
+  const handleAddUrl = () => {
+    const url = urlInput.trim()
+    if (!url) return
+    if (images.length >= MAX_IMAGES) {
+      toast.error(`You can add up to ${MAX_IMAGES} images`)
+      return
     }
+    if (images.includes(url)) {
+      toast.error('This image has already been added')
+      return
+    }
+    setImages((prev) => [...prev, url])
+    setUrlInput('')
   }
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const files = Array.from(e.target.files || [])
+    if (files.length === 0) return
+
+    const remaining = MAX_IMAGES - images.length
+    if (remaining <= 0) {
+      toast.error(`You can add up to ${MAX_IMAGES} images`)
+      e.target.value = ''
+      return
+    }
+    const toUpload = files.slice(0, remaining)
+    if (files.length > remaining) {
+      toast.warn(`Only ${remaining} more image(s) can be added (max ${MAX_IMAGES})`)
+    }
 
     setImageUploading(true)
     try {
-      const response = await uploadService.uploadImage(file)
-      const cloudinaryUrl = response.data.url
-      setFormData((prev) => ({ ...prev, imageUrl: cloudinaryUrl }))
-      setImagePreview(cloudinaryUrl)
-      toast.success('Image uploaded successfully')
+      for (const file of toUpload) {
+        const response = await uploadService.uploadImage(file)
+        const cloudinaryUrl = response.data.url
+        setImages((prev) => (prev.includes(cloudinaryUrl) ? prev : [...prev, cloudinaryUrl]))
+      }
+      toast.success('Image(s) uploaded successfully')
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Failed to upload image')
     } finally {
       setImageUploading(false)
+      e.target.value = ''
     }
+  }
+
+  const handleRemoveImage = (index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -91,16 +123,22 @@ export default function AdminProducts() {
         return
       }
 
+      if (images.length === 0) {
+        toast.error('Please add at least one product image')
+        return
+      }
+
       const submitData: any = {
         name: formData.name,
         description: formData.description,
         price: parseFloat(formData.price),
         stockQuantity: parseInt(formData.stockQuantity),
         categoryId: formData.categoryId || undefined,
-      }
-
-      if (formData.imageUrl) {
-        submitData.images = [{ url: formData.imageUrl, alt: formData.name, isPrimary: true }]
+        images: images.map((url, index) => ({
+          url,
+          alt: formData.name,
+          isPrimary: index === 0,
+        })),
       }
 
       if (editingId) {
@@ -118,16 +156,19 @@ export default function AdminProducts() {
   }
 
   const handleEdit = (product: Product) => {
-    const imageUrl = product.images && product.images.length > 0 ? product.images[0].url : ''
+    // Load existing images, primary first, capped at MAX_IMAGES.
+    const sorted = [...(product.images || [])].sort(
+      (a, b) => Number(b.isPrimary) - Number(a.isPrimary),
+    )
+    setImages(sorted.map((img) => img.url).slice(0, MAX_IMAGES))
     setFormData({
       name: product.name,
       description: product.description,
       price: String(product.price),
       categoryId: product.categoryId || '',
       stockQuantity: String(product.stockQuantity),
-      imageUrl: imageUrl,
     })
-    setImagePreview(imageUrl)
+    setUrlInput('')
     setEditingId(product._id)
     setShowForm(true)
   }
@@ -150,9 +191,9 @@ export default function AdminProducts() {
       price: '',
       categoryId: '',
       stockQuantity: '',
-      imageUrl: '',
     })
-    setImagePreview('')
+    setImages([])
+    setUrlInput('')
     setImageInputType('url')
     setEditingId(null)
     setShowForm(false)
@@ -220,7 +261,7 @@ export default function AdminProducts() {
 
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Price (Rs.) *
+                    Price (₹) *
                   </label>
                   <input
                     type="number"
@@ -266,79 +307,129 @@ export default function AdminProducts() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
-                  Product Image *
-                </label>
-                <div className="flex gap-2 mb-4">
-                  <button
-                    type="button"
-                    onClick={() => setImageInputType('url')}
-                    className={`px-4 py-2 rounded-lg font-semibold transition ${
-                      imageInputType === 'url'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                <div className="flex items-center justify-between mb-3">
+                  <label className="block text-sm font-semibold text-gray-700">
+                    Product Images * (up to {MAX_IMAGES})
+                  </label>
+                  <span
+                    className={`text-xs font-semibold ${
+                      images.length >= MAX_IMAGES ? 'text-red-600' : 'text-gray-500'
                     }`}
                   >
-                    Use URL
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setImageInputType('upload')}
-                    className={`px-4 py-2 rounded-lg font-semibold transition ${
-                      imageInputType === 'upload'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                    }`}
-                  >
-                    Upload Image
-                  </button>
+                    {images.length} / {MAX_IMAGES}
+                  </span>
                 </div>
 
-                {imageInputType === 'url' ? (
-                  <textarea
-                    name="imageUrl"
-                    placeholder="Paste image URL here"
-                    value={formData.imageUrl}
-                    onChange={handleInputChange}
-                    required
-                    rows={2}
-                    className="w-full border border-gray-300 rounded-lg p-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 outline-none transition font-mono text-xs"
-                  />
-                ) : (
-                  <div className="space-y-2">
-                    <input
-                      type="file"
-                      accept="image/jpeg,image/png,image/webp,image/gif"
-                      onChange={handleImageUpload}
-                      disabled={imageUploading}
-                      required={!formData.imageUrl}
-                      className="w-full border border-gray-300 rounded-lg p-3 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 outline-none transition disabled:opacity-50 disabled:cursor-not-allowed"
-                    />
-                    {imageUploading && (
-                      <div className="flex items-center gap-2 text-blue-600 text-sm font-medium">
-                        <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-blue-600"></div>
-                        Uploading to Cloudinary...
+                {/* Thumbnails of added images */}
+                {images.length > 0 && (
+                  <div className="flex flex-wrap gap-3 mb-4">
+                    {images.map((url, index) => (
+                      <div
+                        key={`${url}-${index}`}
+                        className="relative w-24 h-24 rounded-lg border border-gray-300 overflow-hidden group"
+                      >
+                        <img
+                          src={url}
+                          alt={`Product ${index + 1}`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src =
+                              'https://via.placeholder.com/300x300?text=Invalid+URL'
+                          }}
+                        />
+                        {index === 0 && (
+                          <span className="absolute top-1 left-1 bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
+                            Primary
+                          </span>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveImage(index)}
+                          aria-label={`Remove image ${index + 1}`}
+                          className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold leading-none"
+                        >
+                          ✕
+                        </button>
                       </div>
-                    )}
+                    ))}
                   </div>
                 )}
-              </div>
 
-              {imagePreview && (
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Preview
-                  </label>
-                  <img
-                    src={imagePreview}
-                    alt="Product preview"
-                    className="w-32 h-32 object-cover rounded-lg border border-gray-300"
-                    onError={(e) => {
-                      e.currentTarget.src = 'https://via.placeholder.com/300x300?text=Invalid+URL'
-                    }}
-                  />
-                </div>
-              )}
+                {images.length >= MAX_IMAGES ? (
+                  <p className="text-sm text-gray-500 italic">
+                    Maximum of {MAX_IMAGES} images reached. Remove one to add another.
+                  </p>
+                ) : (
+                  <>
+                    <div className="flex gap-2 mb-4">
+                      <button
+                        type="button"
+                        onClick={() => setImageInputType('url')}
+                        className={`px-4 py-2 rounded-lg font-semibold transition ${
+                          imageInputType === 'url'
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
+                      >
+                        Use URL
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setImageInputType('upload')}
+                        className={`px-4 py-2 rounded-lg font-semibold transition ${
+                          imageInputType === 'upload'
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
+                      >
+                        Upload Image
+                      </button>
+                    </div>
+
+                    {imageInputType === 'url' ? (
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={urlInput}
+                          onChange={(e) => setUrlInput(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault()
+                              handleAddUrl()
+                            }
+                          }}
+                          placeholder="Paste image URL and click Add"
+                          className="flex-1 border border-gray-300 rounded-lg p-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 outline-none transition font-mono text-xs"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleAddUrl}
+                          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition"
+                        >
+                          Add
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp,image/gif"
+                          multiple
+                          onChange={handleImageUpload}
+                          disabled={imageUploading}
+                          className="w-full border border-gray-300 rounded-lg p-3 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 outline-none transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        />
+                        {imageUploading && (
+                          <div className="flex items-center gap-2 text-blue-600 text-sm font-medium">
+                            <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-blue-600"></div>
+                            Uploading to Cloudinary...
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
 
               <div className="flex gap-3 pt-4">
                 <button
@@ -406,7 +497,7 @@ export default function AdminProducts() {
                       </td>
                       <td className="px-6 py-4 font-medium text-gray-900">{product.name}</td>
                       <td className="px-6 py-4 text-gray-600 text-sm">{product.categoryId || '—'}</td>
-                      <td className="px-6 py-4 font-semibold">Rs. {product.price.toFixed(2)}</td>
+                      <td className="px-6 py-4 font-semibold">₹{product.price.toLocaleString('en-IN')}</td>
                       <td className="px-6 py-4">
                         <span
                           className={`px-3 py-1 rounded text-xs font-semibold ${
