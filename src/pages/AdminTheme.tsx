@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import { useAuth } from '../store/auth'
 import { useTheme, themes } from '../store/theme'
 import AdminLayout from '../components/AdminLayout'
@@ -16,9 +17,14 @@ export default function AdminTheme() {
     }
   }, [isAdmin, navigate])
 
-  const handleThemeChange = (themeId: string) => {
+  useEffect(() => {
+    setSelectedTheme(currentTheme.id)
+  }, [currentTheme.id])
+
+  const handleThemeChange = (themeId: string, name: string) => {
     setSelectedTheme(themeId)
     setTheme(themeId)
+    toast.success(`"${name}" applied to the storefront`)
   }
 
   if (!isAdmin) return null
@@ -28,88 +34,113 @@ export default function AdminTheme() {
       <div className="space-y-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Theme Settings</h1>
-          <p className="text-gray-600 mt-1">Customize the user-side website theme</p>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Currently Selected Theme</h2>
-          <p className="text-gray-600 mb-6">
-            <span className="font-semibold text-lg">{currentTheme.name}</span> - {currentTheme.description}
+          <p className="text-gray-600 mt-1">
+            Choose from {themes.length} accent themes — your selection instantly recolors the
+            customer-facing website.
           </p>
-          <div className="flex gap-6 items-center">
-            <div className="flex gap-3">
-              <div
-                className="w-20 h-20 rounded-lg shadow-md border-2 border-gray-300"
-                style={{ backgroundColor: currentTheme.primary }}
-              />
-              <div
-                className="w-20 h-20 rounded-lg shadow-md border-2 border-gray-300"
-                style={{ backgroundColor: currentTheme.secondary }}
-              />
-              <div
-                className="w-20 h-20 rounded-lg shadow-md border-2 border-gray-300"
-                style={{ backgroundColor: currentTheme.accent }}
-              />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Primary: {currentTheme.primary}</p>
-              <p className="text-sm text-gray-600">Secondary: {currentTheme.secondary}</p>
-              <p className="text-sm text-gray-600">Accent: {currentTheme.accent}</p>
-            </div>
-          </div>
         </div>
 
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Available Themes</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {themes.map((theme) => (
-              <button
-                key={theme.id}
-                onClick={() => handleThemeChange(theme.id)}
-                className={`p-6 rounded-lg shadow-md transition-all duration-200 border-2 ${
-                  selectedTheme === theme.id
-                    ? 'border-blue-600 shadow-lg scale-105 bg-blue-50'
-                    : 'border-gray-200 hover:shadow-lg hover:border-gray-300'
-                }`}
+        {/* Current theme preview */}
+        <div className="bg-white rounded-xl shadow-md p-6 md:p-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-1">Currently Active</h2>
+          <p className="text-gray-600 mb-6">
+            <span className="font-semibold text-lg">{currentTheme.name}</span> —{' '}
+            {currentTheme.description}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-6 sm:items-center">
+            {/* Mini dark-theme preview using the active accent */}
+            <div
+              className="w-full sm:w-72 rounded-xl p-5"
+              style={{ backgroundColor: '#0B0B0F', border: '1px solid #26262F' }}
+            >
+              <p className="text-xs tracking-widest mb-2" style={{ color: currentTheme.primary }}>
+                NARAH
+              </p>
+              <p className="text-white font-serif text-xl mb-3">Timeless Elegance</p>
+              <span
+                className="inline-block text-xs font-bold px-4 py-2 rounded-full"
+                style={{ backgroundColor: currentTheme.primary, color: '#0B0B0F' }}
               >
-                <h3 className="text-lg font-bold text-gray-900 mb-2">{theme.name}</h3>
-                <p className="text-sm text-gray-600 mb-4">{theme.description}</p>
-
-                <div className="flex gap-3 mb-4">
-                  <div
-                    className="w-12 h-12 rounded-lg shadow-md border border-gray-300"
-                    style={{ backgroundColor: theme.primary }}
-                    title={`Primary: ${theme.primary}`}
-                  />
-                  <div
-                    className="w-12 h-12 rounded-lg shadow-md border border-gray-300"
-                    style={{ backgroundColor: theme.secondary }}
-                    title={`Secondary: ${theme.secondary}`}
-                  />
-                  <div
-                    className="w-12 h-12 rounded-lg shadow-md border border-gray-300"
-                    style={{ backgroundColor: theme.accent }}
-                    title={`Accent: ${theme.accent}`}
-                  />
-                </div>
-
-                {selectedTheme === theme.id && (
-                  <div className="bg-blue-600 text-white text-sm font-semibold py-2 px-4 rounded text-center">
-                    ✓ Active
-                  </div>
-                )}
-              </button>
-            ))}
+                Explore Collection
+              </span>
+            </div>
+            <div className="flex gap-3">
+              <Swatch color={currentTheme.primary} label="Accent" />
+              <Swatch color={currentTheme.secondary} label="Soft" />
+              <Swatch color={currentTheme.accent} label="Base" />
+            </div>
           </div>
         </div>
 
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="font-bold text-blue-900 mb-2">ℹ️ Theme Information</h3>
-          <p className="text-sm text-blue-800">
-            The website uses the Rose Diamond theme featuring romantic rose gold aesthetics. This theme is optimized for NARAH Jewels branding.
+        {/* Theme grid */}
+        <div>
+          <h2 className="text-xl font-bold text-gray-900 mb-4">All Themes ({themes.length})</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {themes.map((theme) => {
+              const active = selectedTheme === theme.id
+              return (
+                <button
+                  key={theme.id}
+                  onClick={() => handleThemeChange(theme.id, theme.name)}
+                  className={`group text-left rounded-xl overflow-hidden transition-all duration-200 border-2 ${
+                    active
+                      ? 'border-gray-900 shadow-lg ring-2 ring-offset-2 ring-gray-900/20'
+                      : 'border-gray-200 hover:border-gray-400 hover:shadow-md'
+                  }`}
+                >
+                  {/* Dark swatch preview */}
+                  <div
+                    className="h-24 flex items-center justify-center relative"
+                    style={{ backgroundColor: '#0B0B0F' }}
+                  >
+                    <div
+                      className="w-12 h-12 rounded-full shadow-lg"
+                      style={{
+                        background: `linear-gradient(135deg, ${theme.secondary}, ${theme.primary})`,
+                      }}
+                    />
+                    {active && (
+                      <span
+                        className="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-full"
+                        style={{ backgroundColor: theme.primary, color: '#0B0B0F' }}
+                      >
+                        ✓ ACTIVE
+                      </span>
+                    )}
+                  </div>
+                  {/* Label */}
+                  <div className="p-3 bg-white">
+                    <h3 className="text-sm font-bold text-gray-900 truncate">{theme.name}</h3>
+                    <p className="text-xs text-gray-500 truncate">{theme.description}</p>
+                  </div>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-5">
+          <h3 className="font-bold text-amber-900 mb-1">ℹ️ How it works</h3>
+          <p className="text-sm text-amber-800">
+            Every theme keeps NARAH's premium dark luxury base and swaps the metallic accent color.
+            The change is saved instantly and applies to all visitors on the storefront — buttons,
+            prices, links, borders and highlights recolor automatically.
           </p>
         </div>
       </div>
     </AdminLayout>
+  )
+}
+
+function Swatch({ color, label }: { color: string; label: string }) {
+  return (
+    <div className="text-center">
+      <div
+        className="w-16 h-16 rounded-lg shadow-md border border-gray-300"
+        style={{ backgroundColor: color }}
+      />
+      <p className="text-[11px] text-gray-500 mt-1">{label}</p>
+      <p className="text-[10px] text-gray-400 font-mono">{color}</p>
+    </div>
   )
 }

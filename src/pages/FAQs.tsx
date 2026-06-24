@@ -47,14 +47,14 @@ export default function FAQs() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+    <div className="min-h-screen bg-ink">
       {/* Hero Section */}
-      <section className="py-20 px-4">
+      <section className="py-12 md:py-20 px-4">
         <div className="container text-center animate-slideUp">
-          <h1 className="text-5xl md:text-6xl font-bold text-accent mb-4 animate-textReveal">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold text-body mb-4 animate-textReveal">
             Frequently Asked Questions
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto animate-fadeInUp animation-delay-200">
+          <p className="text-xl text-muted max-w-2xl mx-auto animate-fadeInUp animation-delay-200">
             Find answers to common questions about our products, shipping, and services
           </p>
         </div>
@@ -75,10 +75,10 @@ export default function FAQs() {
                   className="w-full group"
                 >
                   <div
-                    className={`w-full p-6 rounded-xl transition-all duration-300 ${
+                    className={`w-full p-6 rounded-2xl transition-all duration-300 border ${
                       expanded === idx
-                        ? 'bg-gradient-to-r from-primary to-pink-400 text-white shadow-lg-premium'
-                        : 'bg-white hover:bg-gray-50 text-accent shadow-md-premium'
+                        ? 'bg-gold-gradient text-ink border-transparent shadow-lg-premium'
+                        : 'bg-ink-card hover:border-gold/40 text-body border-ink-border shadow-md-premium'
                     } hover-lift`}
                   >
                     <div className="flex items-center justify-between">
@@ -105,8 +105,8 @@ export default function FAQs() {
                 </button>
 
                 {expanded === idx && (
-                  <div className="animate-slideDown bg-gray-50 p-6 rounded-b-xl border-t-2 border-primary">
-                    <p className="text-gray-600 leading-relaxed">
+                  <div className="animate-slideDown bg-ink-soft p-6 rounded-b-2xl border-t-2 border-gold">
+                    <p className="text-muted leading-relaxed">
                       {faq.answer}
                     </p>
                   </div>
@@ -120,16 +120,16 @@ export default function FAQs() {
       {/* CTA Section */}
       <section className="py-16 px-4">
         <div className="container max-w-2xl">
-          <div className="glass-effect rounded-2xl p-12 text-center shadow-lg-premium animate-scaleIn">
-            <h2 className="text-3xl font-bold text-accent mb-4">
+          <div className="bg-ink-card border border-ink-border rounded-2xl p-6 md:p-12 text-center shadow-lg-premium animate-scaleIn">
+            <h2 className="text-3xl font-serif font-bold text-body mb-4">
               Still have questions?
             </h2>
-            <p className="text-gray-600 mb-8">
+            <p className="text-muted mb-8">
               Our customer support team is here to help you 24/7. Don't hesitate to reach out with any inquiries.
             </p>
             <button
               onClick={() => window.location.href = '/contact'}
-              className="gradient-primary hover-glow text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 hover-lift"
+              className="bg-gold-gradient hover-glow text-ink px-8 py-3 rounded-lg font-semibold transition-all duration-300 hover-lift"
             >
               Contact Us
             </button>

@@ -22,7 +22,7 @@ export default function Input({
   return (
     <div className="w-full">
       <div className="relative">
-        {icon && <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">{icon}</div>}
+        {icon && <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted">{icon}</div>}
         <input
           type={type}
           placeholder={placeholder}
