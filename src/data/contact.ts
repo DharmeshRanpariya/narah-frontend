@@ -2,10 +2,10 @@
 export const contactInfo = {
   brand: 'NARAH',
   phone: '+91 90811 41423',
-  phoneRaw: '919081141423',
-  email: 'hello@narahsilver.com',
-  address: '12 Heritage Lane, Bandra West, Mumbai 400050',
-  whatsapp: '919081141423',
-  instagram: 'https://instagram.com',
+  phoneRaw: '918320044606',
+  email: 'feniavaiya@gmail.com',
+  address: 'G 28 ABC mall 1 , Abc circle, Mota Varachha, Surat - 394101',
+  whatsapp: '918320044606',
+  instagram: 'https://www.instagram.com/narah_by_fenny/',
   facebook: 'https://facebook.com',
 }
