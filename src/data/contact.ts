@@ -1,7 +1,7 @@
 // Brand contact details surfaced across the storefront.
 export const contactInfo = {
   brand: 'NARAH',
-  phone: '+91 90811 41423',
+  phone: '+91 83200 44606',
   phoneRaw: '918320044606',
   email: 'feniavaiya@gmail.com',
   address: 'G 28 ABC mall 1 , Abc circle, Mota Varachha, Surat - 394101',

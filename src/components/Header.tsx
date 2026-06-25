@@ -44,11 +44,10 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled
           ? 'glass-dark shadow-card-dark border-b border-ink-border/80'
           : 'bg-ink border-b border-transparent'
-      }`}
+        }`}
     >
       {/* Announcement bar */}
       <motion.div
@@ -63,7 +62,7 @@ export default function Header() {
             Complimentary insured shipping on all orders
           </span>
           <span className="text-muted">
-            +91 90811 41423 <span className="mx-1 text-gold/60">·</span> WhatsApp available
+            +91 83200 44606 <span className="mx-1 text-gold/60">·</span> WhatsApp available
           </span>
         </div>
       </motion.div>
@@ -81,7 +80,7 @@ export default function Header() {
             alt="NARAH"
             className="h-12 w-auto md:h-14"
             onError={(e) => {
-              ;(e.currentTarget as HTMLImageElement).src =
+              ; (e.currentTarget as HTMLImageElement).src =
                 'data:image/svg+xml;utf8,' +
                 encodeURIComponent(
                   '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="48"><rect width="120" height="48" fill="%231A1A22"/><text x="50%" y="55%" fill="%23D4AF37" font-family="serif" font-size="20" text-anchor="middle" dominant-baseline="middle" letter-spacing="3">NARAH</text></svg>'
@@ -96,15 +95,13 @@ export default function Header() {
             <button
               key={link.path}
               onClick={() => go(link.path)}
-              className={`relative text-sm uppercase tracking-widest transition-colors duration-300 ${
-                isActive(link.path) ? 'text-gold' : 'text-body hover:text-gold'
-              }`}
+              className={`relative text-sm uppercase tracking-widest transition-colors duration-300 ${isActive(link.path) ? 'text-gold' : 'text-body hover:text-gold'
+                }`}
             >
               {link.label}
               <span
-                className={`pointer-events-none absolute -bottom-1.5 left-0 h-px bg-gold transition-all duration-300 ${
-                  isActive(link.path) ? 'w-full' : 'w-0'
-                }`}
+                className={`pointer-events-none absolute -bottom-1.5 left-0 h-px bg-gold transition-all duration-300 ${isActive(link.path) ? 'w-full' : 'w-0'
+                  }`}
               />
             </button>
           ))}
@@ -175,9 +172,8 @@ export default function Header() {
                 <button
                   key={link.path}
                   onClick={() => go(link.path)}
-                  className={`border-b border-ink-border/60 py-3 text-left text-sm uppercase tracking-widest transition-colors ${
-                    isActive(link.path) ? 'text-gold' : 'text-body hover:text-gold'
-                  }`}
+                  className={`border-b border-ink-border/60 py-3 text-left text-sm uppercase tracking-widest transition-colors ${isActive(link.path) ? 'text-gold' : 'text-body hover:text-gold'
+                    }`}
                 >
                   {link.label}
                 </button>
@@ -200,7 +196,7 @@ export default function Header() {
 
               <div className="mt-4 flex flex-col gap-1 border-t border-ink-border/60 pt-3 text-[11px] uppercase tracking-[0.16em] text-faint">
                 <span>Complimentary insured shipping on all orders</span>
-                <span>+91 90811 41423 · WhatsApp available</span>
+                <span>+91 83200 44606 · WhatsApp available</span>
               </div>
             </div>
           </motion.div>
